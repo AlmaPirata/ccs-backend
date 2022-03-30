@@ -14,6 +14,7 @@ use \App\Http\Controllers\NewsListController;
 |
 */
 
-Route::get('/', [NewsListController::class, 'index']);
+Route::get('/', [NewsListController::class, 'index'])->name('index');
 Route::get('/category/{slug}', [NewsListController::class, 'getNewsByCategory'])->name('getNewsByCategory');
 Route::get('/category/{slug_category}/{slug_news}', [NewsListController::class, 'getNews'])->name('getNews');
+Route::get('/parse', [NewsListController::class, 'parse'])->name('parse');
