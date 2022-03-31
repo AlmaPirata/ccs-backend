@@ -21,8 +21,18 @@ class NewsListController extends Controller
 
     public function parse()
     {
-        ParseRBK::parse_news();
-        return redirect()->route('index');
+        $q = ParseRBK::parse_news();
+        echo '<pre>';
+        var_dump($q);
+        echo '</pre>';
+//        $path = resource_path('parse/parser_result.json');
+//        $data = file_get_contents($path);
+//        $data = json_decode($data);
+
+        return view('pages.parse', [
+//           'data' => $data
+        ]);
+//        return redirect()->route('index');
     }
 
     public function getNewsByCategory($slug) {

@@ -10,28 +10,21 @@ class ParseRBK
     public function parse_news()
     {
         try {
-            $path = "parse/rbk_main_page.html";
+            $path = resource_path("parse/rbk_main_page.html");
             $this->get_main_page($path);
-            $data_main = $this->parse_main_page($path);
-            $result = $this->parse_detail_page($data_main);
-            $this->create_result_json($result);
+//            $data_main = $this->parse_main_page($path);
+//            $result = $this->parse_detail_page($data_main);
+//            $this->create_result_json($result);
             return 'success';
         } catch (\Exception $exception){
-            return 'error';
+            return $exception;
         }
     }
 
     private function get_main_page($path)
     {
-        $ch = curl_init ("https://www.rbc.ru/");
-        $path_to_file = resource_path($path);
-        $fp = fopen ($path_to_file, "w");
-        curl_setopt($ch, CURLOPT_USERAGENT, "google");
-        curl_setopt ($ch, CURLOPT_FILE, $fp);
-        curl_setopt ($ch, CURLOPT_HEADER, 0);
-        curl_exec ($ch);
-        curl_close ($ch);
-        fclose ($fp);
+        //$this->get_curl_request($path, "https://www.rbc.ru/");
+        $this->parse_main_page($path);
     }
 
     private function parse_main_page($path)
@@ -45,21 +38,15 @@ class ParseRBK
             $result[$key]['category'][] = $category[0];
             $result[$key]['news_link'][] = $news->href;
         }
-        return $result;
+        $this->parse_detail_page($result);
+//        return $result;
     }
 
     private function parse_detail_page($result)
     {
         foreach ($result as $key => $news) {
-            $ch = curl_init ($news['news_link'][0]);
-            $path = resource_path('parse/rbk_detail_page_'.$key.'.html');
-            $fp = fopen ($path, "w");
-            curl_setopt($ch, CURLOPT_USERAGENT, "google");
-            curl_setopt ($ch, CURLOPT_FILE, $fp);
-            curl_setopt ($ch, CURLOPT_HEADER, 0);
-            curl_exec ($ch);
-            curl_close ($ch);
-            fclose ($fp);
+            $path = resource_path("parse/rbk_detail_page_".$key.".html");
+            $this->get_curl_request($path, $news['news_link'][0]);
 
             $html = HtmlDomParser::file_get_html($path);
             $article = $html->find('.article');
@@ -76,17 +63,29 @@ class ParseRBK
                     $result[$key]['text'][0] .=  '<p>' . trim($p->textContent) . '</p>';
                 }
             }
-
-            sleep(15);
         }
-        return $result;
+        $this->create_result_json($result);
+//        return $result;
     }
 
     private function create_result_json($result)
     {
-        $path = resource_path('parse/parser_result.json');
+        $path = resource_path("parse/parser_result.json");
         $fp = fopen ($path, "w");
         fwrite($fp, json_encode($result));
         fclose($fp);
+    }
+
+    private function get_curl_request($path, $url) {
+        $ch = curl_init ($url);
+        $path = resource_path($path);
+        $fp = fopen ($path, "w+");
+        curl_setopt($ch, CURLOPT_USERAGENT, "google");
+        curl_setopt ($ch, CURLOPT_FILE, $fp);
+        curl_setopt ($ch, CURLOPT_HEADER, 0);
+        curl_exec ($ch);
+        curl_close ($ch);
+        fclose ($fp);
+        sleep(2);
     }
 }
