@@ -1,0 +1,15 @@
+.category-feed{
+    overflow: auto;
+    max-width: 100%;
+}
+.btn-group>a.category-item {
+    flex-basis: 150px;
+    flex-shrink: 0;
+    height: 90px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
+.container img {
+    max-width: 100%;
+}

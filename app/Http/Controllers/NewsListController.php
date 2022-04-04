@@ -5,12 +5,13 @@ namespace App\Http\Controllers;
 use App\Facades\ParseRBK;
 use App\Models\Category;
 use App\Models\News;
+use Illuminate\Support\Facades\DB;
 
 
 class NewsListController extends Controller
 {
     public function index() {
-        $news_array = News::paginate(4);
+        $news_array = News::all()->toQuery()->orderBy('created_at', 'desc')->paginate(4);
         $categories = Category::orderBy('title')->get();
 
         return view('pages.index', [
@@ -21,18 +22,13 @@ class NewsListController extends Controller
 
     public function parse()
     {
-        $q = ParseRBK::parse_news();
-        echo '<pre>';
-        var_dump($q);
-        echo '</pre>';
-//        $path = resource_path('parse/parser_result.json');
-//        $data = file_get_contents($path);
-//        $data = json_decode($data);
+        $data = ParseRBK::parse_news();
+        $count_data = (is_array($data)) ? count($data) : 0;
 
         return view('pages.parse', [
-//           'data' => $data
+            'data' => $data,
+            'count' => $count_data
         ]);
-//        return redirect()->route('index');
     }
 
     public function getNewsByCategory($slug) {

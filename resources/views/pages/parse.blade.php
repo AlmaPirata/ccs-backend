@@ -3,15 +3,9 @@
 @section('title', 'CCS test')
 
 @section('content')
+    <a href="/" class="btn btn-outline-primary mb-4">Вернуться</a>
+    <p>Спаршено новостей: {{ $count }}</p>
     @php
-        echo '<pre style="background: #333;
-    text-align: left;
-    color: #fff;
-    font-size: 11px;
-    padding: 20px;
-    max-height: 500px;
-    overflow: auto">';
-        //print_r($data);
-        echo '</pre>';
+        dd($data);
     @endphp
 @endsection
